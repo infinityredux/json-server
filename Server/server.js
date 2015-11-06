@@ -81,7 +81,7 @@ function default405(data) {
     return out;
 }
 
-routes['/admin/status'] = {
+routes['/admin/status.json'] = {
     requirePost: false,
     hidden: false,
     callback: function (data) {
@@ -90,7 +90,7 @@ routes['/admin/status'] = {
         };
     }
 };
-routes['/admin/shutdown'] = {
+routes['/admin/shutdown.json'] = {
     requirePost: true,
     hidden: true,
     callback: function (data) {

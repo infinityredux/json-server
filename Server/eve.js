@@ -8,7 +8,7 @@ var crestPaths = {};
 
 exports.paths = {};
 
-exports.paths['/eve/pathsCREST'] = {
+exports.paths['/eve/pathsCREST.json'] = {
     desc : 'Parsed output of the EVE CREST api (https://public-crest.eveonline.com/) showing the available endpoints and their associated paths, retrieved and processed as part of the server startup.',
     hidden : false,
     requirePost : false,
@@ -23,8 +23,8 @@ exports.paths['/eve/pathsCREST'] = {
     }
 };
 
-exports.paths['/eve/nonPaths'] = {
-    desc: 'Parsed output of the EVE CREST api (https://public-crest.eveonline.com/) showing the available endpoints and their associated paths, retrieved and processed as part of the server startup.',
+exports.paths['/eve/nonPaths.json'] = {
+    desc: 'Parsed output of the EVE CREST api (https://public-crest.eveonline.com/) showing everything that does not have an associated path.',
     hidden: false,
     requirePost: false,
     callback: function (data) {
