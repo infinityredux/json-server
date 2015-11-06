@@ -67,12 +67,12 @@ var server = http.createServer(function (req, res) {
 });
 
 function default404(data) {
-    var out = '<html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this server are:<ul>';
+    var out = '<!DOCTYPE html><html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this server are:</p><ul>';
     Object.keys(routes).sort().forEach(function (key, i, arr) {
         if (!routes[key].hidden)
             out += '<li><a href="' + key + '">' + key + '</a> ' + (routes[key].desc ? '<br />' + routes[key].desc : '') + '</li>';
     })
-    out += '</ul></p></body></html>';
+    out += '</ul></body></html>';
     return out;
 }
 
