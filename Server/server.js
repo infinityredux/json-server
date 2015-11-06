@@ -1,0 +1,104 @@
+// server.js
+// =========================
+
+var http = require('http');
+var url = require('url');
+var fs = require('fs');
+
+console.log('Starting server...');
+
+var running = true;
+var config = {
+    port: 8000,
+    shutdownPassword: '',
+    fileLoad: [
+        './showRequest.js',
+        './eve.js',
+    ],
+};
+var routes = {};
+
+console.log('Initialising additional files');
+
+config.fileLoad.forEach(function (val, i, arr) {
+    var load = require(val);
+    if (load) {
+        if (load.path)
+            routes[load.path] = load;
+        if (load.paths)
+            routes += load.paths;
+        if (load.init)
+            load.init();
+    }
+});
+
+// NOTE TO SELF:
+// Using console.log for all outputs currently instead of console.error
+// This is so that they are actually included in the output file on the server... 
+// ... probably me not being familiar enough with the Linux output redirect
+
+var server = http.createServer(function (req, res) {
+    var data = url.parse(req.url, true);
+
+    if (!routes.hasOwnProperty(data.pathname)) {
+        res.writeHead(404, { 'content-type': 'text/html' });
+        console.log('404: ' + data.pathname); // ERROR
+        return res.end(default404(data));
+    }
+
+    if (routes[data.pathname].requirePost) {
+        if (req.method != 'POST') {
+            res.writeHead(405, { 'content-type': 'text/html' });
+            console.log('405: ' + data.pathname); // ERROR
+            return res.end(default405(data));
+        }
+    }
+
+    var result = routes[data.pathname].callback(data, req, res);
+    res.writeHead(200, { 'content-type': 'applicaation/json' });
+    res.end(JSON.stringify(result));
+    console.log('200: ' + data.pathname)
+});
+
+function default404(data) {
+    var out = '<html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this server are:<ul>';
+    Object.keys(routes).sort().forEach(function (key, i, arr) {
+        if (!routes[key].hidden)
+            out += '<li><a href="' + key + '">' + key + '</a> ' + (routes[key].desc ? '<br />' + routes[key].desc : '') + '</li>';
+    })
+    out += '</ul></p></body></html>';
+    return out;
+}
+
+function default405(data) {
+    var out = '<html><head><title>405 - Request must be submitted as POST</title><body><h1>405 - Request must be submitted as POST</h1>'
+        + '<p>Standard page requests are obtained via GET, this path only accepts submission of a POST form.</p></body></html>';
+    return out;
+}
+
+routes['/admin/status'] = {
+    requirePost: false,
+    hidden: false,
+    callback: function (data) {
+        return {
+            running: running,
+        };
+    }
+};
+routes['/admin/shutdown'] = {
+    requirePost: true,
+    hidden: true,
+    callback: function (data) {
+        server.close(function () {
+            console.log('Shut down complete');
+        });
+        console.log('Server shutting down...');
+        running = false;
+        return {
+            shutdown: true,
+        };
+    }
+};
+
+console.log('Listening for requests');
+server.listen(config.port);
