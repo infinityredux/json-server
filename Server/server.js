@@ -106,5 +106,6 @@ routes['/admin/shutdown.json'] = {
     }
 };
 
-console.log('Listening for requests');
-server.listen(config.port, config.host);
+server.listen(config.port, config.host, 511, function () {
+    console.log('Listening for requests');
+});
