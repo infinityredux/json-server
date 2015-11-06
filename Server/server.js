@@ -106,6 +106,14 @@ routes['/admin/shutdown.json'] = {
     }
 };
 
+// TODO:
+// Work out why this is not actually working as expected
+// i.e. it seems to ignore the host address specified
+//
+// I suspect that this is somehow related to the fact that the path 
+// showing the request details happens to consistently return null 
+// for protocol, slashes, auth, host, etc.
+// 
 server.listen(config.port, config.host, 511, function () {
     console.log('Listening for requests');
 });
