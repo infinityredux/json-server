@@ -10,6 +10,7 @@ console.log('Starting server...');
 var running = true;
 var config = {
     port: 8000,
+    host: 'projects.infinityredux.net',
     shutdownPassword: '',
     fileLoad: [
         './showRequest.js',
@@ -106,4 +107,4 @@ routes['/admin/shutdown.json'] = {
 };
 
 console.log('Listening for requests');
-server.listen(config.port);
+server.listen(config.port, config.host);
