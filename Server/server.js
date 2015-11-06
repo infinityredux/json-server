@@ -23,12 +23,17 @@ console.log('Initialising additional files');
 config.fileLoad.forEach(function (val, i, arr) {
     var load = require(val);
     if (load) {
-        if (load.path)
+        if (load.path) {
             routes[load.path] = load;
-        if (load.paths)
-            routes += load.paths;
-        if (load.init)
+        }
+        if (load.paths) {
+            Object.keys(load.paths).forEach(function (key) {
+                routes[key] = load.paths[key];
+            });
+        }
+        if (load.init) {
             load.init();
+        }
     }
 });
 

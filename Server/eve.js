@@ -6,7 +6,7 @@ var https = require('https');
 var crest = false;
 var crestPaths = {};
 
-exports.paths = [];
+exports.paths = {};
 
 exports.paths['/eve/pathsCREST'] = {
     desc : 'Parsed output of the EVE CREST api (https://public-crest.eveonline.com/) showing the available endpoints and their associated paths, retrieved and processed as part of the server startup.',
