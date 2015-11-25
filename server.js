@@ -3,7 +3,7 @@
 
 var http = require('http');
 var url = require('url');
-var fs = require('fs');
+//var fs = require('fs');
 
 console.log('Starting server...');
 
@@ -21,7 +21,7 @@ var routes = {};
 
 console.log('Initialising additional files');
 
-config.fileLoad.forEach(function (val, i, arr) {
+config.fileLoad.forEach(function (val) {
     var load = require(val);
     if (load) {
         if (load.path) {
@@ -66,42 +66,43 @@ var server = http.createServer(function (req, res) {
     console.log('200: ' + data.pathname)
 });
 
-function default404(data) {
-    var out = '<!DOCTYPE html><html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this server are:</p><ul>';
-    Object.keys(routes).sort().forEach(function (key, i, arr) {
+function default404() {
+    var out = '<html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this' +
+        ' server are:</p><ul>';
+    Object.keys(routes).sort().forEach(function (key) {
         if (!routes[key].hidden)
             out += '<li><a href="' + key + '">' + key + '</a> ' + (routes[key].desc ? '<br />' + routes[key].desc : '') + '</li>';
-    })
+    });
     out += '</ul></body></html>';
     return out;
 }
 
-function default405(data) {
-    var out = '<html><head><title>405 - Request must be submitted as POST</title><body><h1>405 - Request must be submitted as POST</h1>'
-        + '<p>Standard page requests are obtained via GET, this path only accepts submission of a POST form.</p></body></html>';
-    return out;
+function default405() {
+    return '<html><head><title>405 - Request must be submitted as POST</title><body><h1>405 - Request must be submitted ' +
+        'as POST</h1> <p>Standard page requests are obtained via GET, this path only accepts submission of a POST form.' +
+        '</p></body></html>';
 }
 
 routes['/admin/status.json'] = {
     requirePost: false,
     hidden: false,
-    callback: function (data) {
+    callback: function () {
         return {
-            running: running,
+            running: running
         };
     }
 };
 routes['/admin/shutdown.json'] = {
     requirePost: true,
     hidden: true,
-    callback: function (data) {
+    callback: function () {
         server.close(function () {
             console.log('Shut down complete');
         });
         console.log('Server shutting down...');
         running = false;
         return {
-            shutdown: true,
+            shutdown: true
         };
     }
 };
