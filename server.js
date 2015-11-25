@@ -10,12 +10,12 @@ console.log('Starting server...');
 var running = true;
 var config = {
     port: 8000,
-    host: 'projects.infinityredux.net',
+    host: 'localhost', // 'projects.infinityredux.net',
     shutdownPassword: '',
     fileLoad: [
         './showRequest.js',
-        './eve.js',
-    ],
+        './eve.js'
+    ]
 };
 var routes = {};
 
