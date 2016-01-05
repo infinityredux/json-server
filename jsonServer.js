@@ -3,44 +3,14 @@
 
 var http = require('http');
 var url = require('url');
-//var fs = require('fs');
-
-console.log('Starting server...');
 
 var running = true;
-var config = {
-    port: 8000,
-    host: 'localhost', // 'projects.infinityredux.net',
-    shutdownPassword: '',
-    fileLoad: [
-        './showRequest.js',
-        './eve.js'
-    ]
-};
 var routes = {};
-
-console.log('Initialising additional files');
-
-config.fileLoad.forEach(function (val) {
-    var load = require(val);
-    if (load) {
-        if (load.path) {
-            routes[load.path] = load;
-        }
-        if (load.paths) {
-            Object.keys(load.paths).forEach(function (key) {
-                routes[key] = load.paths[key];
-            });
-        }
-        if (load.init) {
-            load.init();
-        }
-    }
-});
+var config;
 
 // NOTE TO SELF:
 // Using console.log for all outputs currently instead of console.error
-// This is so that they are actually included in the output file on the server... 
+// This is so that they are actually included in the output file on the server...
 // ... probably me not being familiar enough with the Linux output redirect
 
 var server = http.createServer(function (req, res) {
@@ -63,7 +33,8 @@ var server = http.createServer(function (req, res) {
     var result = routes[data.pathname].callback(data, req, res);
     res.writeHead(200, { 'content-type': 'applicaation/json' });
     res.end(JSON.stringify(result));
-    console.log('200: ' + data.pathname)
+
+    if (!config.quiet) console.log('200: ' + data.pathname)
 });
 
 function default404() {
@@ -92,6 +63,7 @@ routes['/admin/status.json'] = {
         };
     }
 };
+
 routes['/admin/shutdown.json'] = {
     requirePost: true,
     hidden: true,
@@ -107,14 +79,41 @@ routes['/admin/shutdown.json'] = {
     }
 };
 
+exports.init = function(options) {
+    config = options;
+    if (!config.quiet) console.log('JSON server init begins...');
+    if (!config.quiet) console.log('Initialising additional files');
+
+    config.fileLoad.forEach(function (val) {
+        var load = require(val);
+        if (load) {
+            if (load.path) {
+                routes[load.path] = load;
+            }
+            if (load.paths) {
+                Object.keys(load.paths).forEach(function (key) {
+                    routes[key] = load.paths[key];
+                });
+            }
+            if (load.init) {
+                load.init();
+            }
+        }
+    });
+    if (!config.quiet)
+    if (!config.quiet) console.log('JSON server init complete.');
+}
+
 // TODO:
 // Work out why this is not actually working as expected
 // i.e. it seems to ignore the host address specified
 //
-// I suspect that this is somehow related to the fact that the path 
-// showing the request details happens to consistently return null 
+// I suspect that this is somehow related to the fact that the path
+// showing the request details happens to consistently return null
 // for protocol, slashes, auth, host, etc.
-// 
-server.listen(config.port, config.host, 511, function () {
-    console.log('Listening for requests');
-});
+//
+exports.listen = function() {
+    server.listen(config.port, config.host, 511, function () {
+        if (!config.quiet) console.log('Listening for requests');
+    });
+}
