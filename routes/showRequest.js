@@ -1,4 +1,4 @@
-// showRequest.js
+// routes/showRequest.js
 // =========================
 
 exports.path = '/test/showRequest.json';

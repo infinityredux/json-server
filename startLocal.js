@@ -6,7 +6,7 @@ var json = require('./jsonServer.js');
 
 var config = {
     port: 8000,
-    host: 'projects.infinityredux.net',
+    host: 'localhost',
     shutdownPassword: '',
     fileLoad: [
         './routes/showRequest.js',
