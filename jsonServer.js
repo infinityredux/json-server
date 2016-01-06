@@ -9,39 +9,35 @@ var running = true;
 var routes = {};
 var config;
 
-// NOTE TO SELF:
-// Using console.log for all outputs currently instead of console.error
-// This is so that they are actually included in the output file on the server...
-// ... probably me not being familiar enough with the Linux output redirect
-
 var server = http.createServer(function (req, res) {
     var data = url.parse(req.url, true);
 
     if (!routes.hasOwnProperty(data.pathname)) {
         res.writeHead(404, { 'content-type': 'text/html' });
-        console.log('404: ' + data.pathname); // ERROR
+        log.error(data.pathname, 404);
         return res.end(default404(data));
     }
 
     if (routes[data.pathname].requirePost) {
         if (req.method != 'POST') {
             res.writeHead(405, { 'content-type': 'text/html' });
-            console.log('405: ' + data.pathname); // ERROR
+            log.error(data.pathname, 405);
             return res.end(default405(data));
         }
     }
 
     var result = routes[data.pathname].callback(data, req, res);
-    res.writeHead(200, { 'content-type': 'applicaation/json' });
+    res.writeHead(200, { 'content-type': 'application/json' });
     res.end(JSON.stringify(result));
 
     if (!config.quiet) console.log('200: ' + data.pathname)
 });
 
 exports.init = function(options) {
+    log.init(options);
     config = options;
-    if (!config.quiet) console.log('JSON server init begins...');
-    if (!config.quiet) console.log('Initialising additional files');
+    log.out('JSON server init begins...');
+    log.out('Initialising additional files');
 
     config.fileLoad.forEach(function (val) {
         var load = require(val);
