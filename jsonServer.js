@@ -3,6 +3,7 @@
 
 var http = require('http');
 var url = require('url');
+var log = require('./jsonLog.js');
 
 var running = true;
 var routes = {};
@@ -37,6 +38,45 @@ var server = http.createServer(function (req, res) {
     if (!config.quiet) console.log('200: ' + data.pathname)
 });
 
+exports.init = function(options) {
+    config = options;
+    if (!config.quiet) console.log('JSON server init begins...');
+    if (!config.quiet) console.log('Initialising additional files');
+
+    config.fileLoad.forEach(function (val) {
+        var load = require(val);
+        if (load) {
+            if (load.path) {
+                routes[load.path] = load;
+            }
+            if (load.paths) {
+                Object.keys(load.paths).forEach(function (key) {
+                    routes[key] = load.paths[key];
+                });
+            }
+            if (load.init) {
+                load.init();
+            }
+        }
+    });
+    if (!config.quiet)
+        if (!config.quiet) console.log('JSON server init complete.');
+};
+
+// TODO:
+// Work out why this is not actually working as expected
+// i.e. it seems to ignore the host address specified
+//
+// I suspect that this is somehow related to the fact that the path
+// showing the request details happens to consistently return null
+// for protocol, slashes, auth, host, etc.
+//
+exports.listen = function() {
+    server.listen(config.port, config.host, 511, function () {
+        if (!config.quiet) console.log('Listening for requests');
+    });
+};
+
 function default404() {
     var out = '<html><head><title>404 - Path not found</title><body><h1>404 - Path not found</h1><p>Valid paths for this' +
         ' server are:</p><ul>';
@@ -67,7 +107,14 @@ routes['/admin/status.json'] = {
 routes['/admin/shutdown.json'] = {
     requirePost: true,
     hidden: true,
-    callback: function () {
+    callback: function (data) {
+        if (config.shutdownPassword) {
+            if (data.query.password != config.shutdownPassword) {
+                return {
+                    shutdown: false
+                }
+            }
+        }
         server.close(function () {
             console.log('Shut down complete');
         });
@@ -78,42 +125,3 @@ routes['/admin/shutdown.json'] = {
         };
     }
 };
-
-exports.init = function(options) {
-    config = options;
-    if (!config.quiet) console.log('JSON server init begins...');
-    if (!config.quiet) console.log('Initialising additional files');
-
-    config.fileLoad.forEach(function (val) {
-        var load = require(val);
-        if (load) {
-            if (load.path) {
-                routes[load.path] = load;
-            }
-            if (load.paths) {
-                Object.keys(load.paths).forEach(function (key) {
-                    routes[key] = load.paths[key];
-                });
-            }
-            if (load.init) {
-                load.init();
-            }
-        }
-    });
-    if (!config.quiet)
-    if (!config.quiet) console.log('JSON server init complete.');
-}
-
-// TODO:
-// Work out why this is not actually working as expected
-// i.e. it seems to ignore the host address specified
-//
-// I suspect that this is somehow related to the fact that the path
-// showing the request details happens to consistently return null
-// for protocol, slashes, auth, host, etc.
-//
-exports.listen = function() {
-    server.listen(config.port, config.host, 511, function () {
-        if (!config.quiet) console.log('Listening for requests');
-    });
-}

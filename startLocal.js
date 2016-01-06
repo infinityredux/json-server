@@ -5,9 +5,10 @@
 var json = require('./jsonServer.js');
 
 var config = {
+    name: 'Local',
     port: 8000,
     host: 'localhost',
-    shutdownPassword: '',
+    shutdownPassword: 'randomPassword',
     fileLoad: [
         './routes/showRequest.js',
         './routes/eve.js'

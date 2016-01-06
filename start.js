@@ -5,9 +5,10 @@
 var json = require('./jsonServer.js');
 
 var config = {
+    name: 'Infinity',
     port: 8000,
     host: 'projects.infinityredux.net',
-    shutdownPassword: '',
+    shutdownPassword: 'password',
     fileLoad: [
         './routes/showRequest.js',
         './routes/eve.js'
