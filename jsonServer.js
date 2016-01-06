@@ -1,4 +1,4 @@
-// server.js
+// jsonServer.js
 // =========================
 
 var http = require('http');
@@ -30,7 +30,7 @@ var server = http.createServer(function (req, res) {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(JSON.stringify(result));
 
-    if (!config.quiet) console.log('200: ' + data.pathname)
+    log.result(data.pathname, 200);
 });
 
 exports.init = function(options) {
@@ -55,8 +55,7 @@ exports.init = function(options) {
             }
         }
     });
-    if (!config.quiet)
-        if (!config.quiet) console.log('JSON server init complete.');
+    log.out('JSON server init complete.');
 };
 
 // TODO:
@@ -69,7 +68,7 @@ exports.init = function(options) {
 //
 exports.listen = function() {
     server.listen(config.port, config.host, 511, function () {
-        if (!config.quiet) console.log('Listening for requests');
+        log.out('Listening for requests');
     });
 };
 
@@ -112,9 +111,9 @@ routes['/admin/shutdown.json'] = {
             }
         }
         server.close(function () {
-            console.log('Shut down complete');
+            log.out('Shut down complete');
         });
-        console.log('Server shutting down...');
+        log.out('Server shutting down...');
         running = false;
         return {
             shutdown: true
