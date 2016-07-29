@@ -1,0 +1,10 @@
+{
+  "name": "Infinity",
+  "port": 8000,
+  "host": "projects.infinityredux.net",
+  "shutdownPassword": "password",
+  "fileLoad": [
+    "./routes/showRequest.js",
+    "./routes/eve.js"
+  ]
+}

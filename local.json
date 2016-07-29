@@ -1,0 +1,10 @@
+{
+  "name": "Local",
+  "port": 8000,
+  "host": "localhost",
+  "shutdownPassword": "randomPassword",
+  "fileLoad": [
+    "./routes/showRequest.js",
+    "./routes/eve.js"
+  ]
+}
