@@ -1,6 +1,5 @@
-/**
- * Created by Nick on 05/01/2016.
- */
+// start.js
+// =========================
 
 var fs = require('fs');
 
@@ -18,7 +17,7 @@ var config = {
 };
 
 if (process.argv.length > 2) {
-    console.log('Loading config file');
+    console.log('Loading config file: ' + process.argv[2]);
     try {
         var contents = fs.readFileSync(process.argv[2]);
         var results = JSON.parse(contents);
